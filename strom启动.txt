@@ -49,3 +49,6 @@ firststrom           ACTIVE     0          0            23
 3070 [main] INFO  o.a.s.c.kill-topology - Killed topology: firststrom
 
 
+开发简单的Kafka应用   https://www.cnblogs.com/freeweb/p/5291134.html
+
+Storm集成Kafka应用的开发   https://www.cnblogs.com/freeweb/p/5292961.html
