@@ -1,0 +1,51 @@
+D:\zookeeper-3.4.13\bin\zkServer.cmd
+D:\apache-storm-1.2.2\bin\storm.py nimbus
+D:\apache-storm-1.2.2\bin\storm.py supervisor
+D:\apache-storm-1.2.2\bin\storm.py ui
+
+
+localhost:8080
+
+D:\apache-storm-1.2.2\bin\storm.py kill
+
+
+D:\apache-storm-1.2.2\examples\storm-starter>D:\apache-storm-1.2.2\bin\storm  jar target/storm-starter-1.2.2.jar org.apache.storm.starter.ExclamationTopology
+
+F:\eclipse-workspace\TopologyMain>mvn  package
+F:\eclipse-workspace\TopologyMain>D:\apache-storm-1.2.2\bin\storm  jar target\TopologyMain-0.0.1-SNAPSHOT.jar org.apache.storm.TopologyMain.App F:\issue\849\vmsalgo20181106_0000.log
+F:\eclipse-workspace\TopologyMain>java -jar target\TopologyMain-0.0.1-SNAPSHOT.jar org.apache.storm.TopologyMain.App F:\issue\849\vmsalgo20181106_0000.log
+
+javac -cp "D:\apache-storm-1.2.2\lib\*";".\target\*" *.java
+java -cp "D:\apache-storm-1.2.2\lib\*";".\target\*" org.apache.storm.TopologyMain.App F:\issue\AGV925\AGV925.log
+
+
+
+https://www.cnblogs.com/freeweb/p/5242631.html
+https://www.jianshu.com/p/6783f1ec2da0
+如果是不带参数可以直行如下命令，将本地运行
+storm jar firststorm.jar org.apache.storm.firststorm.FirstStorm
+
+如果需要提交到storm集群，则需要将jar报上床到storm的 nimbus服务器上直行如下命令
+注意最后的firststrom是这个拓扑的名字，用来区分是启动的哪个拓扑的，便于list和kill
+[root@Storm-master test]# ../bin/storm jar firststorm.jar org.apache.storm.firststorm.FirstStorm firststrom
+
+直行成功最后一行打印如下
+1503 [main] INFO  o.a.s.StormSubmitter - Finished submitting topology: firststrom
+
+查看所有拓扑
+[root@Storm-master test]# ../bin/storm list
+
+有类似如下打印
+Topology_name        Status     Num_tasks  Num_workers  Uptime_secs
+-------------------------------------------------------------------
+firststrom1          ACTIVE     5          3            53
+firststrom           ACTIVE     0          0            23
+
+
+停止拓扑
+[root@Storm-master test]# ../bin/storm kill firststrom
+
+有类似如下打印
+3070 [main] INFO  o.a.s.c.kill-topology - Killed topology: firststrom
+
+

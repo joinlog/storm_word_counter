@@ -1,0 +1,4 @@
+org\apache\storm\TopologyMain\App.class
+org\apache\storm\TopologyMain\WordCounter.class
+org\apache\storm\TopologyMain\WordNormalizer.class
+org\apache\storm\TopologyMain\WordReader.class
