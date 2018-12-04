@@ -52,3 +52,5 @@ firststrom           ACTIVE     0          0            23
 开发简单的Kafka应用   https://www.cnblogs.com/freeweb/p/5291134.html
 
 Storm集成Kafka应用的开发   https://www.cnblogs.com/freeweb/p/5292961.html
+
+Apache Kafka 整合 Storm  https://www.w3cschool.cn/apache_kafka/apache_kafka_integration_storm.html
