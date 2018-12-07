@@ -1,0 +1,100 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.apache.storm</groupId>
+  <artifactId>firstTopic</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>firstTopic</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+<profiles>
+    <profile>
+        <id>intellij</id>
+        <properties>
+            <provided.scope>compile</provided.scope>
+        </properties>
+    </profile>
+</profiles>
+
+<repositories>
+
+    <!-- Repository where we can found the storm dependencies  -->
+    <repository>
+        <id>clojars.org</id>
+        <url>http://clojars.org/repo</url>
+    </repository>
+
+</repositories>
+
+<dependencies>
+
+    <dependency>
+        <groupId>org.apache.storm</groupId>
+        <artifactId>storm-core</artifactId>
+
+        <!-- 这里的版本号必须和集群中的storm版本保持一致-->
+        <version>1.2.2</version>
+	  	<scope>provided</scope>
+        <!--
+          U当打包时，不能把storm打进去，必须是provided。而在本地开发调试时必须将该行去掉。ctrl + /
+        -->
+        <!--<scope>${provided.scope}</scope>-->
+    </dependency>
+
+    <dependency>
+        <groupId>org.apache.storm</groupId>
+        <artifactId>storm-kafka</artifactId>
+        <version>1.2.2</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.apache.kafka</groupId>
+        <artifactId>kafka_2.9.2</artifactId>
+        <version>0.8.2.2</version>
+        <exclusions>
+            <exclusion>
+                <groupId>org.apache.zookeeper</groupId>
+                <artifactId>zookeeper</artifactId>
+            </exclusion>
+            <exclusion>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+</dependencies>
+
+<build>
+    <plugins>
+        <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+                <descriptorRefs>
+                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+                <!-- 保证打包时有入口函数 -->
+                <archive>
+                    <manifest>
+                        <mainClass>com.kafka.MyKafkaTopology</mainClass>
+                    </manifest>
+                </archive>
+            </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <source>1.8</source>
+                <target>1.8</target>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+</project>
