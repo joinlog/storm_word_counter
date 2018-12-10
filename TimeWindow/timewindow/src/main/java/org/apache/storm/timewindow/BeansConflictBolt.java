@@ -15,17 +15,18 @@ import org.apache.storm.timewindow.rectanglePoints;
  */
 public class BeansConflictBolt extends BaseBasicBolt {
     public void execute(Tuple arg0, BasicOutputCollector arg1) {
+    	System.out.println("BeansConflictBolt execute start");
 //        String word = (String) arg0.getValue(0);
 //        String out = "Hello " + word + "!";
 //        System.out.println(out);
-    	List<Object> rectPtPair = arg0.getValues();
-    	rectanglePoints rectPt0 = (rectanglePoints)rectPtPair.get(0);
-    	rectanglePoints rectPt1 = (rectanglePoints)rectPtPair.get(1);
+    	rectanglePoints rectPt0 = (rectanglePoints)arg0.getValue(0);
+    	rectanglePoints rectPt1 = (rectanglePoints)arg0.getValue(1);
     	
     	if (isConflict2Rect(rectPt0, rectPt1)) {
           String out = " " + rectPt0.toString() + " Vs " + rectPt1.toString();
           System.out.println(out);
 		}
+    	System.out.println("BeansConflictBolt execute end");
     	
     }
 
@@ -35,6 +36,6 @@ public class BeansConflictBolt extends BaseBasicBolt {
     
     public Boolean isConflict2Rect(rectanglePoints rectPt0, rectanglePoints rectPt1) {
     	// TODO
-    	return false;
+    	return true;
     }
 }

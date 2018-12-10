@@ -36,10 +36,11 @@ public class TimeWindow {
                 e.printStackTrace();
             }
         } else {
+        	System.out.println("storm local cluster mode!");
             LocalCluster cluster = new LocalCluster();
-            cluster.submitTopology("firststorm", conf, builder.createTopology());
+            cluster.submitTopology("timewindow", conf, builder.createTopology());
             Utils.sleep(30000);
-            cluster.killTopology("firststorm");
+            cluster.killTopology("timewindow");
             cluster.shutdown();
         }
     }

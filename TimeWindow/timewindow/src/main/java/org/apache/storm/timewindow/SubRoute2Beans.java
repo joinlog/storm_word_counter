@@ -18,37 +18,119 @@ import org.apache.storm.timewindow.rectanglePoints;
  */
 public class SubRoute2Beans extends BaseBasicBolt {
 
+	private static int agvLength = 1500;
+	private static int agvWidth = 400;
     public void execute(Tuple arg0, BasicOutputCollector collector) {
 //        String word = (String) arg0.getValue(0);
 //        String out = "Hello " + word + "!";
 //        System.out.println(out);
-        
-        List<Object> agvRtPair = arg0.getValues();
-        List<poseXYH> agvRt0 = (List<poseXYH>) agvRtPair.get(0);
-        List<poseXYH> agvRt1 = (List<poseXYH>) agvRtPair.get(1);
-        List<rectanglePoints> rectPts0 = route2Points(agvRt0);
-        List<rectanglePoints> rectPts1 = route2Points(agvRt1);
+    	System.out.println("SubRoute2Beans execute start");
+        List<poseXYH> agvRt0 = (List<poseXYH>) arg0.getValue(0);;
+        List<poseXYH> agvRt1 = (List<poseXYH>) arg0.getValue(1);;
+        List<rectanglePoints> rectPts0 = route2RectPoints(agvRt0);
+        List<rectanglePoints> rectPts1 = route2RectPoints(agvRt1);
         for (int i = 0; i < rectPts0.size(); i++) {
         	for (int j = 0; j < rectPts1.size(); j++) {
-        		List<rectanglePoints> rectPtsPair = new ArrayList<rectanglePoints>();
-        		rectPtsPair.add(rectPts0.get(i));
-        		rectPtsPair.add(rectPts1.get(j));
-        		collector.emit(new Values(rectPtsPair));
+        		collector.emit(new Values(rectPts0.get(i), rectPts0.get(j)));
     		}
 		}
+        System.out.println("SubRoute2Beans execute end");
     }
 
     public void declareOutputFields(OutputFieldsDeclarer arg0) {
-    	arg0.declare(new Fields("rectPtsPair"));
+    	arg0.declare(new Fields("rectPts1", "rectPts2"));
     }
     
+
     
-    private List<rectanglePoints> route2Points(List<poseXYH> argRt) {
-    	List<rectanglePoints> rectPts = new ArrayList<rectanglePoints>();
-    	for (int i = 0; i < argRt.size(); i++) {
-    		rectanglePoints mRectPt = new rectanglePoints(argRt.get(i));
-    		rectPts.add(mRectPt);
+     // 垂直的
+    private List<poseXYH> line2PointsVertical(int min1, int max1, int value2) {
+    	List<poseXYH> mPts = new ArrayList<poseXYH>();
+
+		int maxValue = max1 - agvLength / 2;
+		int minValue = min1 + agvLength / 2;
+		if (maxValue <= minValue) {
+			poseXYH mPose = new poseXYH();
+			mPose.setX(value2);
+			mPose.setY((minValue + maxValue) / 2);
+			mPose.setH(90);
+			mPts.add(mPose);
+		} else {
+			for (; minValue < maxValue; minValue += 10) {
+				poseXYH mPose = new poseXYH();
+				mPose.setX(value2);
+				mPose.setY(minValue);
+				mPose.setH(90);
+				mPts.add(mPose);
+			}
+			poseXYH mPose = new poseXYH();
+			mPose.setX(value2);
+			mPose.setY(maxValue);
+			mPose.setH(90);
+			mPts.add(mPose);
+		}
+		return mPts;
+    }
+    
+    // 水平的
+    private List<poseXYH> line2PointsHorizontal(int min1, int max1, int value2) {
+    	List<poseXYH> mPts = new ArrayList<poseXYH>();
+
+		int maxValue = max1 - agvLength / 2;
+		int minValue = min1 + agvLength / 2;
+		if (maxValue <= minValue) {
+			poseXYH mPose = new poseXYH();
+			mPose.setY(value2);
+			mPose.setX((minValue + maxValue) / 2);
+			mPose.setH(0);
+			mPts.add(mPose);
+		} else {
+			for (; minValue < maxValue; minValue += 10) {
+				poseXYH mPose = new poseXYH();
+				mPose.setY(value2);
+				mPose.setX(minValue);
+				mPose.setH(0);
+				mPts.add(mPose);
+			}
+			poseXYH mPose = new poseXYH();
+			mPose.setY(value2);
+			mPose.setX(maxValue);
+			mPose.setH(0);
+			mPts.add(mPose);
+		}
+		return mPts;
+    }
+    
+    // 一段子路径转换成路径上的点
+    private List<poseXYH> route2Points(poseXYH pose1, poseXYH pose2) {
+    	
+    	if (Math.abs(pose1.getX() - pose2.getX()) < 1E-6) { // 垂直方向
     		
+    		return line2PointsVertical(Math.min(pose1.getY(), pose2.getY()), Math.max(pose1.getY(), pose2.getY()), pose1.getX());
+    	} else { // 水平方向
+    		return line2PointsHorizontal(Math.min(pose1.getX(), pose2.getX()), Math.max(pose1.getX(), pose2.getX()), pose1.getY());
+    	}
+    }
+    
+    // 所有子路径都转换成子路径上的点
+    private List<poseXYH> route2Points(List<poseXYH> argRt) {
+    	List<poseXYH> mPts = new ArrayList<poseXYH>();
+    	for (int i = 1; i < argRt.size(); i++) {
+    		List<poseXYH> mPtsSubRoute = route2Points(argRt.get(i - 1), argRt.get(i ));
+    		for (int j = 0; j < mPtsSubRoute.size(); ++j) {
+    			mPts.add(mPtsSubRoute.get(j));
+    		}
+    	}
+    	return mPts;
+    }
+    
+    // 将子路径上的点转换成以点为中心车长宽为边长的四边形的四个顶点列表
+    private List<rectanglePoints> route2RectPoints(List<poseXYH> argRt) {
+    	List<rectanglePoints> rectPts = new ArrayList<rectanglePoints>();
+    	List<poseXYH> mPose = route2Points(argRt);
+    	for (int i = 0; i < mPose.size(); i++) {
+    		rectanglePoints mRectPt = new rectanglePoints(mPose.get(i), agvLength / 2, agvWidth / 2);
+    		rectPts.add(mRectPt);
 		}
     	return rectPts;
     }
