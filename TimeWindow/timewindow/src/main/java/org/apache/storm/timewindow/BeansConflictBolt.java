@@ -34,8 +34,45 @@ public class BeansConflictBolt extends BaseBasicBolt {
         
     }
     
+    public Boolean isConflict2Rect(rectanglePoints rectPt0, rectanglePoints rectPt1, Vector2DM vec) {
+    	int []minmax1 = rectPt0.GetMinMaxValueAfterProject(vec);
+    	int []minmax2 = rectPt1.GetMinMaxValueAfterProject(vec);
+    	if (minmax1[0] > minmax2[1]) {
+    		return false;
+    	}
+    	
+    	if (minmax1[1] < minmax2[0]) {
+    		return false;
+    	}
+    	return true;
+    }
+    
+    public Boolean isConflict2RectWithVectorsOfRec0(rectanglePoints rectPt0, rectanglePoints rectPt1) {
+    	
+    	List<Vector2DM> vectors = rectPt0.GetVectors();
+    	for (int i = 0; i < vectors.size(); i++) {
+    		Vector2DM vec = vectors.get(i).NormalVector();
+    		vec.NormalizeVector();
+    		if (isConflict2Rect(rectPt0, rectPt1, vec)) {
+    			return true;
+    		}
+		}
+    	return false;
+    }
+    
     public Boolean isConflict2Rect(rectanglePoints rectPt0, rectanglePoints rectPt1) {
     	// TODO
-    	return true;
+    	if (rectPt0.GetRadius() + rectPt1.GetRadius() > Math.sqrt(Math.pow(rectPt0.GetCenterX() - rectPt1.GetCenterX() , rectPt0.GetCenterY() - rectPt1.GetCenterY())) ) {
+    		return false;
+    	}
+
+    	if (isConflict2RectWithVectorsOfRec0(rectPt0, rectPt1)) {
+    		return true;
+    	}
+    	
+    	if (isConflict2RectWithVectorsOfRec0(rectPt1, rectPt0)) {
+    		return true;
+    	}
+    	return false;
     }
 }
