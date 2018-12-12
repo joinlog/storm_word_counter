@@ -11,6 +11,9 @@ import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseRichSpout;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.storm.timewindow.poseXYH;
 
 /**
@@ -18,7 +21,7 @@ import org.apache.storm.timewindow.poseXYH;
  *  发送路径对,比如有300条路径，将其两两一对发送到下一级blot处理
  */
 public class SubRouteSpout  extends BaseRichSpout {
-
+	protected static final Logger LOG = LoggerFactory.getLogger(SubRouteSpout.class);
 	private SpoutOutputCollector collector;
 //    private static String[] words = {"Hadoop","Storm","Apache","Linux","Nginx","Tomcat","Spark"};
     private List<List<poseXYH>> agvRoutes;
@@ -40,6 +43,9 @@ public class SubRouteSpout  extends BaseRichSpout {
     }
 
     public void open(Map arg0, TopologyContext arg1, SpoutOutputCollector arg2) {
+    	long startTime = System.currentTimeMillis();
+        LOG.info("start open @ " + startTime);
+    	System.out.println("start open @ " + startTime);
         this.collector = arg2;
         agvRoutes = new ArrayList<List<poseXYH>>();
         System.out.println("subRouteSpout open start");

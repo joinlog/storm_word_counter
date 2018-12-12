@@ -4,9 +4,14 @@ import org.apache.storm.topology.BasicOutputCollector;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseBasicBolt;
 import org.apache.storm.tuple.Tuple;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.storm.task.TopologyContext;
 import org.apache.storm.timewindow.rectanglePoints;
 
 /**
@@ -14,25 +19,43 @@ import org.apache.storm.timewindow.rectanglePoints;
  * 计算两个Beans是否冲突，并记录到数据库
  */
 public class BeansConflictBolt extends BaseBasicBolt {
+	protected static final Logger LOG = LoggerFactory.getLogger(BeansConflictBolt.class);
+	Map<String, Boolean> counterMap;
+	public void prepare(Map stormConf, TopologyContext context) {
+		this.counterMap = new HashMap<String, Boolean>();
+	}
+
     public void execute(Tuple arg0, BasicOutputCollector arg1) {
-    	System.out.println("BeansConflictBolt execute start");
+    	//System.out.println("BeansConflictBolt execute start");
 //        String word = (String) arg0.getValue(0);
 //        String out = "Hello " + word + "!";
 //        System.out.println(out);
     	rectanglePoints rectPt0 = (rectanglePoints)arg0.getValue(0);
     	rectanglePoints rectPt1 = (rectanglePoints)arg0.getValue(1);
     	
+    	String out = " " + rectPt0.toString() + " Vs " + rectPt1.toString();
     	if (isConflict2Rect(rectPt0, rectPt1)) {
-          String out = " " + rectPt0.toString() + " Vs " + rectPt1.toString();
-          System.out.println(out);
+    		counterMap.put(out, true);
+          //System.out.println(out);
+		} else {
+			counterMap.put(out, false);
 		}
-    	System.out.println("BeansConflictBolt execute end");
+    	//System.out.println("BeansConflictBolt execute end");
     	
     }
 
     public void declareOutputFields(OutputFieldsDeclarer arg0) {
         
     }
+    
+    public void cleanup() {
+    	long endTime = System.currentTimeMillis();
+    	LOG.info("clean up @ " + endTime);
+    	System.out.println("clean up @ " + endTime);
+        for(Map.Entry<String, Boolean> entry:counterMap.entrySet()){
+           System.out.println(entry.getKey()+" : " + entry.getValue());
+        }
+     }
     
     public Boolean isConflict2Rect(rectanglePoints rectPt0, rectanglePoints rectPt1, Vector2DM vec) {
     	int []minmax1 = rectPt0.GetMinMaxValueAfterProject(vec);
