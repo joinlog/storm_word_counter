@@ -1,19 +1,38 @@
 package org.apache.storm.timewindow;
 import org.apache.storm.timewindow.poseXYH;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.storm.timewindow.Vector2DM;
 
-public class rectanglePoints {
+public class rectanglePoints  implements Serializable {
 	private int x[] = new int [4];
 	private int y[] = new int [4];
 	private int centerx;
 	private int centery;
 	private int radius;
 	
-	rectanglePoints(poseXYH p, int halfHeight, int halfWidth) {
+	public String toString() {
+		return "poseXYH x[" + x[0] + ","+ x[1] + ","+ x[2] + ","+ x[3] + "],y["+ y[0] + ","+ y[1] + ","+ y[2] + ","+ y[3] + "],centerx=" + centerx + ",centery=" + centery +",radius=" + radius;
+	}
+	public rectanglePoints(int x1,int x2,int x3,int x4,int y1,int y2,int y3,int y4,int centerx, int centery, int radius) {
+		super();
+		this.x[0] = x1;
+		this.x[1] = x2;
+		this.x[2] = x3;
+		this.x[3] = x4;
+		this.y[0] = y1;
+		this.y[1] = y2;
+		this.y[2] = y3;
+		this.y[3] = y4;
+		this.centerx = centerx;
+		this.centery = centery;
+		this.radius = radius;
+	}
+	
+	public rectanglePoints(poseXYH p, int halfHeight, int halfWidth) {
 		int halfX = 0;
 		int halfY = 0;
 		if (p.getH() == 0) {
@@ -61,13 +80,13 @@ public class rectanglePoints {
 		return y[i];
 	}
 	
-	public String toString() {
-		return "rect:" + toString(x[0], y[0]) + "," + toString(x[1], y[1]) + "," + toString(x[2], y[2]) + "," + toString(x[3], y[3]) + ";"; 
-	}
-	
-	public String toString(int x1, int y1) {
-		return "(" + String.valueOf(x1) + "," + String.valueOf(y1) + ")";
-	}
+//	public String toString() {
+//		return "rect:" + toString(x[0], y[0]) + "," + toString(x[1], y[1]) + "," + toString(x[2], y[2]) + "," + toString(x[3], y[3]) + ";"; 
+//	}
+//	
+//	public String toString(int x1, int y1) {
+//		return "(" + String.valueOf(x1) + "," + String.valueOf(y1) + ")";
+//	}
 	
 	public List<Vector2DM> GetVectors() {
 		List<Vector2DM> mVectors = new ArrayList<Vector2DM>();

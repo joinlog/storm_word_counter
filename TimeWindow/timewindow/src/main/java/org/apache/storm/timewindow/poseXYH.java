@@ -1,6 +1,8 @@
 package org.apache.storm.timewindow;
 
-public class poseXYH {
+import java.io.Serializable;
+
+public class poseXYH implements Serializable {
 
 	private int x; // cm
 	private int y; // cm
@@ -22,6 +24,21 @@ public class poseXYH {
 		return h;
 	}
 	public void setH(int h) {
+		this.h = h;
+	}
+	public String toString() {
+		return "poseXYH [x=" + x + ", y=" + y + ", h=" + h + "]";
+	}
+	public poseXYH() {
+		super();
+		this.x = 0;
+		this.y = 0;
+		this.h = 0;
+	}
+	public poseXYH(int x, int y, int h) {
+		super();
+		this.x = x;
+		this.y = y;
 		this.h = h;
 	}
 }

@@ -20,7 +20,8 @@ import org.apache.storm.timewindow.rectanglePoints;
  */
 public class BeansConflictBolt extends BaseBasicBolt {
 	protected static final Logger LOG = LoggerFactory.getLogger(BeansConflictBolt.class);
-	Map<String, Boolean> counterMap;
+	Map<String, Boolean> counterMap = null;
+	
 	public void prepare(Map stormConf, TopologyContext context) {
 		this.counterMap = new HashMap<String, Boolean>();
 	}
@@ -34,6 +35,7 @@ public class BeansConflictBolt extends BaseBasicBolt {
     	rectanglePoints rectPt1 = (rectanglePoints)arg0.getValue(1);
     	
     	String out = " " + rectPt0.toString() + " Vs " + rectPt1.toString();
+//    	System.out.println(out);
     	if (isConflict2Rect(rectPt0, rectPt1)) {
     		counterMap.put(out, true);
           //System.out.println(out);

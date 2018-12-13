@@ -24,7 +24,7 @@ public class SubRouteSpout  extends BaseRichSpout {
 	protected static final Logger LOG = LoggerFactory.getLogger(SubRouteSpout.class);
 	private SpoutOutputCollector collector;
 //    private static String[] words = {"Hadoop","Storm","Apache","Linux","Nginx","Tomcat","Spark"};
-    private List<List<poseXYH>> agvRoutes;
+    private List<List<poseXYH>> agvRoutes = null;
     private static int agvNum = 300;
 
     public void nextTuple() {
@@ -83,18 +83,18 @@ public class SubRouteSpout  extends BaseRichSpout {
     	//pb (x,y,h)
     	List<poseXYH> mStartEnd = new ArrayList<poseXYH>();
     	for (int i = 0; i < xPb.size(); i++) {
-    		poseXYH mp = new poseXYH();
-    		mp.setH(90);
-    		mp.setX(xPb.get(i));
-    		mp.setY(yStartEnd[0]);
+    		poseXYH mp = new poseXYH(xPb.get(i), yStartEnd[0], 90);
+//    		mp.setH(90);
+//    		mp.setX(xPb.get(i));
+//    		mp.setY(yStartEnd[0]);
     		mStartEnd.add(mp);
 		}
     	//tp (x,y,h)
     	for (int i = 0; i < xTp.size(); i++) {
-    		poseXYH mp = new poseXYH();
-    		mp.setH(90);
-    		mp.setX(xTp.get(i));
-    		mp.setY(yStartEnd[1]);
+    		poseXYH mp = new poseXYH(xTp.get(i), yStartEnd[1], 90);
+//    		mp.setH(90);
+//    		mp.setX(xTp.get(i));
+//    		mp.setY(yStartEnd[1]);
     		mStartEnd.add(mp);
 		}
     	//
@@ -113,10 +113,10 @@ public class SubRouteSpout  extends BaseRichSpout {
 		}
     	//
     	mRtPoseList.add(mStartEnd.get(iStart));
-    	poseXYH mp = new poseXYH();
-		mp.setH(0);
-		mp.setX(mStartEnd.get(iStart).getX());
-		mp.setY(yMid);
+    	poseXYH mp = new poseXYH(mStartEnd.get(iStart).getX(), yMid, 0);
+//		mp.setH(0);
+//		mp.setX(mStartEnd.get(iStart).getX());
+//		mp.setY(yMid);
 		mRtPoseList.add(mp);
 		
 		mp.setH(0);
