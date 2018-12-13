@@ -39,7 +39,7 @@ public class TimeWindow {
         	System.out.println("storm local cluster mode!");
             LocalCluster cluster = new LocalCluster();
             cluster.submitTopology("timewindow", conf, builder.createTopology());
-            Utils.sleep(30000);
+            Utils.sleep(90000);
             cluster.killTopology("timewindow");
             cluster.shutdown();
         }

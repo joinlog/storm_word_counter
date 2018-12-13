@@ -16,6 +16,19 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.storm.timewindow.poseXYH;
 
+/*
+ * Storm中Spout用于读取并向计算拓扑中发送数据源，最近在调试一个topology时遇到了系统qps低，处理速度达不到要求的问题，经过排查后发现是由于对Spout的使用模式不当导致的多线程同步等待。这里罗列几点个人觉得编写Spout代码时需要特别注意的地方：
+
+1. 最常用的模式是使用一个线程安全的queue，如BlockingQueue，spout主线程从queue中读取数据；另外的一个或多个线程负责从数据源（如各种消息中间件、db等）读取数据并放入queue中。
+
+2. 如果不关心数据是否丢失（例如数据统计分析的典型场景），不要启用ack机制。
+
+3. Spout的nextTuple和ack方法是在同一个线程中被执行的（可能最初觉得这块不会成为瓶颈，为了简单实现起见就单线程了，jstorm应该是已经改成了多线程），因此不能在nextTuple或ack方法里block住当前线程，这样将直接影响spout的处理速度，很关键。
+
+4. Spout的nextTuple发送数据时，不能阻塞当前线程（见上一条），比如从queue中取数据时，使用poll接口而不是take，且poll方法尽量不要传参阻塞固定时间，如果queue中没有数据则直接返回；如果有多条待发送的数据，则一次调用nextTuple时遍历全部发出去。
+
+5. Spout从0.8.1之后在调用nextTuple方法时，如果没有emit tuple，那么默认需要休眠1ms，这个具体的策略是可配置的，因此可以根据自己的具体场景，进行设置，以达到合理利用cpu资源。
+ * */
 /**
  * @author zpmc
  *  发送路径对,比如有300条路径，将其两两一对发送到下一级blot处理
@@ -26,20 +39,24 @@ public class SubRouteSpout  extends BaseRichSpout {
 //    private static String[] words = {"Hadoop","Storm","Apache","Linux","Nginx","Tomcat","Spark"};
     private List<List<poseXYH>> agvRoutes = null;
     private static int agvNum = 300;
-
+    private int agv1Index;
+    private int agv2Index;
     public void nextTuple() {
 //        String word = words[new Random().nextInt(words.length)];
 //        collector.emit(new Values(word));
-    	System.out.println("subRouteSpout nextTuple start");
-        for (int i = 0; i < agvRoutes.size(); i++) {
-        	for (int j = i + 1; j < agvRoutes.size(); j++) {
-//        		List<List<poseXYH>> agvRtPair = new ArrayList<List<poseXYH>>();
-//        		agvRtPair.add(agvRoutes.get(i));
-//        		agvRtPair.add(agvRoutes.get(j));
-        		collector.emit(new Values(agvRoutes.get(i), agvRoutes.get(j)));
-    		}
-		}
-        System.out.println("subRouteSpout nextTuple end");
+    	//System.out.println("subRouteSpout nextTuple start");
+
+        if (agv1Index < agvRoutes.size()) {
+        	if (agv2Index < agvRoutes.size()) {
+        		collector.emit(new Values(agvRoutes.get(agv1Index), agvRoutes.get(agv2Index)));
+        		++agv2Index;
+        	} else {
+        		++agv1Index;
+        		agv2Index = agv1Index + 1;
+        	}
+        }
+        //System.out.println("subRouteSpout nextTuple end");
+        
     }
 
     public void open(Map arg0, TopologyContext arg1, SpoutOutputCollector arg2) {
@@ -47,6 +64,8 @@ public class SubRouteSpout  extends BaseRichSpout {
         LOG.info("start open @ " + startTime);
     	System.out.println("start open @ " + startTime);
         this.collector = arg2;
+        agv1Index = 0;
+        agv2Index = agv1Index + 1;
         agvRoutes = new ArrayList<List<poseXYH>>();
         System.out.println("subRouteSpout open start");
         // TODO 读取或随机生成agv 路径上的点列加入到agvRoutes中去

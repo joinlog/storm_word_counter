@@ -24,6 +24,7 @@ public class BeansConflictBolt extends BaseBasicBolt {
 	
 	public void prepare(Map stormConf, TopologyContext context) {
 		this.counterMap = new HashMap<String, Boolean>();
+		System.out.println("BeansConflictBolt prepare start");
 	}
 
     public void execute(Tuple arg0, BasicOutputCollector arg1) {

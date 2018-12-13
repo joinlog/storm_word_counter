@@ -1,7 +1,9 @@
 package org.apache.storm.timewindow;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.storm.topology.BasicOutputCollector;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -9,6 +11,7 @@ import org.apache.storm.topology.base.BaseBasicBolt;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
+import org.apache.storm.task.TopologyContext;
 import org.apache.storm.timewindow.poseXYH;
 import org.apache.storm.timewindow.rectanglePoints;
 
@@ -20,11 +23,17 @@ public class SubRoute2Beans extends BaseBasicBolt {
 
 	private static int agvLength = 1500;
 	private static int agvWidth = 400;
+	
+	public void prepare(Map stormConf, TopologyContext context) {
+		System.out.println("SubRoute2Beans prepare start");
+	}
+
+	
     public void execute(Tuple arg0, BasicOutputCollector collector) {
 //        String word = (String) arg0.getValue(0);
 //        String out = "Hello " + word + "!";
 //        System.out.println(out);
-    	System.out.println("SubRoute2Beans execute start");
+//    	System.out.println("SubRoute2Beans execute start");
         List<poseXYH> agvRt0 = (List<poseXYH>) arg0.getValue(0);;
         List<poseXYH> agvRt1 = (List<poseXYH>) arg0.getValue(1);;
         List<rectanglePoints> rectPts0 = route2RectPoints(agvRt0);
@@ -34,7 +43,7 @@ public class SubRoute2Beans extends BaseBasicBolt {
         		collector.emit(new Values(rectPts0.get(i), rectPts1.get(j)));
     		}
 		}
-        System.out.println("SubRoute2Beans execute end");
+//        System.out.println("SubRoute2Beans execute end");
     }
 
     public void declareOutputFields(OutputFieldsDeclarer arg0) {
