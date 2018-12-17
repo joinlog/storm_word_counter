@@ -36,10 +36,10 @@ public class BeansConflictBolt extends BaseBasicBolt {
     	rectanglePoints rectPt1 = (rectanglePoints)arg0.getValue(1);
     	
     	String out = " " + rectPt0.toString() + " Vs " + rectPt1.toString();
-//    	System.out.println(out);
+    	//System.out.println(out);
     	if (isConflict2Rect(rectPt0, rectPt1)) {
     		counterMap.put(out, true);
-          //System.out.println(out);
+          System.out.println(out);
 		} else {
 			counterMap.put(out, false);
 		}

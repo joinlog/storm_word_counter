@@ -33,9 +33,9 @@ public class SubRoute2Beans extends BaseBasicBolt {
 //        String word = (String) arg0.getValue(0);
 //        String out = "Hello " + word + "!";
 //        System.out.println(out);
-//    	System.out.println("SubRoute2Beans execute start");
-        List<poseXYH> agvRt0 = (List<poseXYH>) arg0.getValue(0);;
-        List<poseXYH> agvRt1 = (List<poseXYH>) arg0.getValue(1);;
+    	System.out.println("SubRoute2Beans execute start");
+        List<poseXYH> agvRt0 = (List<poseXYH>) arg0.getValue(0);
+        List<poseXYH> agvRt1 = (List<poseXYH>) arg0.getValue(1);
         List<rectanglePoints> rectPts0 = route2RectPoints(agvRt0);
         List<rectanglePoints> rectPts1 = route2RectPoints(agvRt1);
         for (int i = 0; i < rectPts0.size(); i++) {
@@ -43,7 +43,7 @@ public class SubRoute2Beans extends BaseBasicBolt {
         		collector.emit(new Values(rectPts0.get(i), rectPts1.get(j)));
     		}
 		}
-//        System.out.println("SubRoute2Beans execute end");
+        System.out.println("SubRoute2Beans execute end");
     }
 
     public void declareOutputFields(OutputFieldsDeclarer arg0) {

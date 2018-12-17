@@ -38,7 +38,7 @@ public class SubRouteSpout  extends BaseRichSpout {
 	private SpoutOutputCollector collector;
 //    private static String[] words = {"Hadoop","Storm","Apache","Linux","Nginx","Tomcat","Spark"};
     private List<List<poseXYH>> agvRoutes = null;
-    private static int agvNum = 300;
+    private static int agvNum = 2;
     private int agv1Index;
     private int agv2Index;
     public void nextTuple() {
