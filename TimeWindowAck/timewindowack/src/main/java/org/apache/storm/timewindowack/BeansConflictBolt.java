@@ -28,7 +28,7 @@ public class BeansConflictBolt extends BaseBasicBolt {
 	}
 
     public void execute(Tuple arg0, BasicOutputCollector arg1) {
-    	System.out.println("BeansConflictBolt execute start");
+    	//System.out.println("BeansConflictBolt execute start");
 //        String word = (String) arg0.getValue(0);
 //        String out = "Hello " + word + "!";
 //        System.out.println(out);
@@ -38,12 +38,12 @@ public class BeansConflictBolt extends BaseBasicBolt {
     	String out = " " + rectPt0.toString() + " Vs " + rectPt1.toString();
     	//System.out.println(out);
     	if (isConflict2Rect(rectPt0, rectPt1)) {
-    		counterMap.put(out, true);
-          System.out.println(out);
+    		//counterMap.put(out, true);
+          //System.out.println(out);
 		} else {
-			counterMap.put(out, false);
+			//counterMap.put(out, false);
 		}
-    	System.out.println("BeansConflictBolt execute end");
+    	//System.out.println("BeansConflictBolt execute end");
     	
     }
 

@@ -48,6 +48,11 @@ public class SubRouteSpout  extends BaseRichSpout {
 
     private int agvRect1Index;
     private int agvRect2Index;
+    
+    long startTime = 0;
+    long cnt = 0;
+    long lastCnt = 0;
+    
     public void nextTuple() {
 //        String word = words[new Random().nextInt(words.length)];
 //        collector.emit(new Values(word));
@@ -61,6 +66,7 @@ public class SubRouteSpout  extends BaseRichSpout {
         			if (agvRect2Index < rectList2.size()) {
         				collector.emit(new Values(rectList1.get(agvRect1Index), rectList2.get(agvRect2Index)));
         				++agvRect2Index;
+        				++cnt;
             		} else {
             			++agvRect1Index;
             			agvRect2Index = 0;
@@ -78,13 +84,22 @@ public class SubRouteSpout  extends BaseRichSpout {
         		agvRect1Index = 0;
     			agvRect2Index = 0;
         	}
+        } else {
+        	if (lastCnt != cnt) {
+        		lastCnt = cnt;
+	        	long endTime = System.currentTimeMillis();
+	        	System.out.println("subRouteSpout nextTuple end @" + endTime);
+	        	System.out.println("subRouteSpout total count:" + cnt);
+	        	System.out.println("total time:" + (endTime - startTime));
+	        	System.out.println("count per time:" + cnt / (endTime - startTime));
+        	}
         }
         //System.out.println("subRouteSpout nextTuple end");
         
     }
 
     public void open(Map arg0, TopologyContext arg1, SpoutOutputCollector arg2) {
-    	long startTime = System.currentTimeMillis();
+    	startTime = System.currentTimeMillis();
         LOG.info("start open @ " + startTime);
     	System.out.println("start open @ " + startTime);
         this.collector = arg2;
@@ -98,6 +113,8 @@ public class SubRouteSpout  extends BaseRichSpout {
         for (int i = 0; i < agvNum; i++) {
         	List<poseXYH> mRtPoseList = getRoutePoseList();
             List<rectanglePoints> rectPts0 = route2RectPoints(mRtPoseList);
+            System.out.println("route pose size:"+mRtPoseList.size()+" ("+mRtPoseList.get(0).getX() +","+mRtPoseList.get(0).getY() +"):"+mRtPoseList.get(0).getH() +"-("+mRtPoseList.get(mRtPoseList.size() - 1).getX() +","+mRtPoseList.get(mRtPoseList.size() - 1).getY() +"):"+mRtPoseList.get(mRtPoseList.size() - 1).getH() );
+            System.out.println("rect size:" + rectPts0.size());
             agvRouteRectPoints.add(rectPts0);
 		}
         System.out.println("subRouteSpout open end");
