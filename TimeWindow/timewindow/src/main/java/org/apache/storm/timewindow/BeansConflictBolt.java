@@ -51,6 +51,7 @@ public class BeansConflictBolt extends BaseBasicBolt {
         
     }
     
+    // 完档显示只在本地模式有用，但实际是本地的集群都没调用
     public void cleanup() {
     	long endTime = System.currentTimeMillis();
     	LOG.info("clean up @ " + endTime);

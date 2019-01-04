@@ -38,8 +38,8 @@ public class SubRoute2Beans extends BaseBasicBolt {
         List<poseXYH> agvRt1 = (List<poseXYH>) arg0.getValue(1);
         List<rectanglePoints> rectPts0 = route2RectPoints(agvRt0);
         List<rectanglePoints> rectPts1 = route2RectPoints(agvRt1);
-        for (int i = 0; i < rectPts0.size(); i++) {
-        	for (int j = 0; j < rectPts1.size(); j++) {
+        for (int i = 0; i < 2/*rectPts0.size()*/; i++) {
+        	for (int j = 0; j < 2/*rectPts1.size()*/; j++) {
         		collector.emit(new Values(rectPts0.get(i), rectPts1.get(j)));
     		}
 		}
