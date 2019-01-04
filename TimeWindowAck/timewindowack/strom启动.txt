@@ -1,0 +1,177 @@
+
+2 编译命令（本地执行）
+mvn  package
+得到
+timewindow\target\timewindow-0.0.1-SNAPSHOT.jar
+
+3 将timewindow-0.0.1-SNAPSHOT.jar上传到服务器
+
+4 在服务器执行命令
+	开启拓扑
+/cloud/apache-storm-1.2.2/bin/storm  jar timewindow-0.0.1-SNAPSHOT.jar org.apache.storm.timewindow.TimeWindow topologyNameTimeWindow
+
+	查看拓扑
+/cloud/apache-storm-1.2.2/bin/storm list	
+
+	关闭拓扑
+/cloud/apache-storm-1.2.2/bin/storm kill topologyNameTimeWindow
+
+	关闭防火墙：service iptables stop
+6 实际服务器
+部署了一套三个节点的Storm环境，或许可以用作测试开发。
+? ?配置如下：
+? ? ?Storm-master ? 10.28.254.167 ? ? ?(root 密码： 
+? ? ?Storm-slave1 ? ?10.28.254.168 ? ???(root 密码： 
+? ???Storm-slave1? ? 10.28.254.169 ? ???(root 密码： 
+?
+?
+Storm UI：?http://10.28.254.167:8080/index.html
+
+
+
+storm入门,有非常详细的storm图片资料
+https://blog.csdn.net/scl1991/article/details/51814293
+
+
+5 实际例子参考如下
+
+
+https://www.cnblogs.com/freeweb/p/5242631.html
+https://www.jianshu.com/p/6783f1ec2da0
+如果是不带参数可以直行如下命令，将本地运行
+storm jar firststorm.jar org.apache.storm.firststorm.FirstStorm
+
+如果需要提交到storm集群，则需要将jar报上床到storm的 nimbus服务器上直行如下命令
+注意最后的firststrom是这个拓扑的名字，用来区分是启动的哪个拓扑的，便于list和kill
+[root@Storm-master test]# ../bin/storm jar firststorm.jar org.apache.storm.firststorm.FirstStorm firststrom
+
+直行成功最后一行打印如下
+1503 [main] INFO  o.a.s.StormSubmitter - Finished submitting topology: firststrom
+
+查看所有拓扑
+[root@Storm-master test]# ../bin/storm list
+
+有类似如下打印
+Topology_name        Status     Num_tasks  Num_workers  Uptime_secs
+-------------------------------------------------------------------
+firststrom1          ACTIVE     5          3            53
+firststrom           ACTIVE     0          0            23
+
+
+停止拓扑
+[root@Storm-master test]# ../bin/storm kill firststrom
+
+有类似如下打印
+3070 [main] INFO  o.a.s.c.kill-topology - Killed topology: firststrom
+
+
+开发简单的Kafka应用   https://www.cnblogs.com/freeweb/p/5291134.html
+
+Storm集成Kafka应用的开发   https://www.cnblogs.com/freeweb/p/5292961.html
+
+Apache Kafka 整合 Storm  https://www.w3cschool.cn/apache_kafka/apache_kafka_integration_storm.html
+
+
+1 本地开启storm服务指令（不用本地服务器的可以忽略）在服务器端开启的指令相似
+D:\zookeeper-3.4.13\bin\zkServer.cmd
+D:\apache-storm-1.2.2\bin\storm.py nimbus
+D:\apache-storm-1.2.2\bin\storm.py supervisor
+D:\apache-storm-1.2.2\bin\storm.py ui
+
+
+localhost:8080
+
+D:\apache-storm-1.2.2\bin\storm.py kill
+
+
+D:\apache-storm-1.2.2\examples\storm-starter>D:\apache-storm-1.2.2\bin\storm  jar target/storm-starter-1.2.2.jar org.apache.storm.starter.ExclamationTopology
+
+
+3.        关闭防火墙和selinux
+Redhat使用了SELinux来增强安全，关闭的办法为：
+
+1. 永久有效
+
+修改 /etc/selinux/config 文件中的 SELINUX="" 为 disabled ，然后重启。
+
+2. 即时生效
+
+setenforce 0
+
+ 
+
+关闭防火墙的方法为：
+
+1. 永久性生效
+
+开启：chkconfig iptables on
+
+关闭：chkconfig iptables off
+
+2. 即时生效，重启后失效
+
+开启：service iptables start
+
+关闭：service iptables stop
+
+ 
+
+需要说明的是对于 Linux 下的其它服务都可以用以上命令执行开启和关闭操作
+
+ 
+
+补充：
+
+a. 防火墙还需要关闭ipv6的防火墙：
+
+chkconfig ip6tables off
+
+并且可以通过如下命令查看状态：
+
+chkconfig --list iptables
+
+b. selinux状态可以通过以下命令查看：
+
+Sestatus
+
+===============
+
+ 
+
+# uname -a # 查看内核/操作系统/CPU信息 
+# head -n 1 /etc/issue # 查看操作系统版本 
+# cat /proc/cpuinfo # 查看CPU信息 
+# hostname # 查看计算机名 
+# lspci -tv # 列出所有PCI设备 
+# lsusb -tv # 列出所有USB设备 
+# lsmod # 列出加载的内核模块 
+# env # 查看环境变量资源 
+# free -m # 查看内存使用量和交换区使用量 
+# df -h # 查看各分区使用情况 
+# du -sh <目录名> # 查看指定目录的大小 
+# grep MemTotal /proc/meminfo # 查看内存总量 
+# grep MemFree /proc/meminfo # 查看空闲内存量 
+# uptime # 查看系统运行时间、用户数、负载 
+# cat /proc/loadavg # 查看系统负载磁盘和分区 
+# mount | column -t # 查看挂接的分区状态 
+# fdisk -l # 查看所有分区 
+# swapon -s # 查看所有交换分区 
+# hdparm -i /dev/hda # 查看磁盘参数(仅适用于IDE设备) 
+# dmesg | grep IDE # 查看启动时IDE设备检测状况网络 
+# ifconfig # 查看所有网络接口的属性 
+# iptables -L # 查看防火墙设置 
+# route -n # 查看路由表 
+# netstat -lntp # 查看所有监听端口 
+# netstat -antp # 查看所有已经建立的连接 
+# netstat -s # 查看网络统计信息进程 
+# ps -ef # 查看所有进程 
+# top # 实时显示进程状态用户 
+# w # 查看活动用户 
+# id <用户名> # 查看指定用户信息 
+# last # 查看用户登录日志 
+# cut -d: -f1 /etc/passwd # 查看系统所有用户 
+# cut -d: -f1 /etc/group # 查看系统所有组 
+# crontab -l # 查看当前用户的计划任务服务 
+# chkconfig –list # 列出所有系统服务 
+# chkconfig –list | grep on # 列出所有启动的系统服务程序 
+# rpm -qa # 查看所有安装的软件包
