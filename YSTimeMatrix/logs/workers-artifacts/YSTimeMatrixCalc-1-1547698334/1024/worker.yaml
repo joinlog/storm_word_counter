@@ -1,0 +1,4 @@
+worker-id: b2043e04-d496-4689-b87c-dbd60388d1e4
+logs.users: []
+logs.groups: []
+topology.submitter.user: zpmc
