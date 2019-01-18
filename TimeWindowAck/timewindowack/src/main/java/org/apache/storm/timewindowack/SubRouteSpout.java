@@ -34,6 +34,10 @@ import org.apache.storm.timewindowack.poseXYH;
  *  发送路径对,比如有300条路径，将其两两一对发送到下一级blot处理
  */
 public class SubRouteSpout  extends BaseRichSpout {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 673856985162055644L;
 	protected static final Logger LOG = LoggerFactory.getLogger(SubRouteSpout.class);
 	private SpoutOutputCollector collector;
 //    private static String[] words = {"Hadoop","Storm","Apache","Linux","Nginx","Tomcat","Spark"};
@@ -63,6 +67,7 @@ public class SubRouteSpout  extends BaseRichSpout {
         		List<rectanglePoints> rectList1 = agvRouteRectPoints.get(agv1Index);
         		List<rectanglePoints> rectList2 = agvRouteRectPoints.get(agv2Index);
         		if (agvRect1Index < rectList1.size()) {
+
         			if (agvRect2Index < rectList2.size()) {
         				collector.emit(new Values(rectList1.get(agvRect1Index), rectList2.get(agvRect2Index)));
         				++agvRect2Index;

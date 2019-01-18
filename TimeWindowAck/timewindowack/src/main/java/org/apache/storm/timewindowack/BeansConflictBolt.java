@@ -19,6 +19,10 @@ import org.apache.storm.timewindowack.rectanglePoints;
  * 计算两个Beans是否冲突，并记录到数据库
  */
 public class BeansConflictBolt extends BaseBasicBolt {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 252296805290644655L;
 	protected static final Logger LOG = LoggerFactory.getLogger(BeansConflictBolt.class);
 	Map<String, Boolean> counterMap = null;
 	
