@@ -15,13 +15,13 @@ import org.apache.storm.tuple.Tuple;
 import redis.clients.jedis.Jedis;
 
 public class NewsNotifierBolt extends BaseRichBolt {
-	private Jedis jedis;
+	//private Jedis jedis;
 	Timer timer;
 	OutputCollector collector;
 	String host;
 	int port;
 	long downloadTime;
-
+	AGVTaskResultReaderWriter AGVTaskResRW;
 	// ITEM:AGV-TASK -> SCORE
 	HashMap<String, Integer> pendingToSave = new HashMap<String, Integer>(); 
 	
@@ -32,17 +32,15 @@ public class NewsNotifierBolt extends BaseRichBolt {
 		this.downloadTime = Long.valueOf(stormConf.get("download-time").toString());
 		startDownloaderThread();
 		this.collector = collector;
+		AGVTaskResRW = new AGVTaskResultReaderWriter(host, port);
 		reconnect();
 	}
 	
 	public void reconnect() {
-		this.jedis = new Jedis(host, port);
+		//this.jedis = new Jedis(host, port);
+		AGVTaskResRW.reconnect();
 	}
 	
-
-	private String buildRedisKey(String agv) {
-		return "agv:"+agv;
-	}
 	
 	private String buildLocalKey(int agv, int task) {
 		return String.valueOf(agv)+":"+String.valueOf(task);
@@ -71,7 +69,11 @@ public class NewsNotifierBolt extends BaseRichBolt {
 					String agv = keys[0];
 					String task = keys[1];
 					Integer score = pendings.get(key);
-					jedis.hset(buildRedisKey(agv), task, score.toString());
+					//jedis.hset(buildRedisKey(agv), task, score.toString());
+					
+					
+					AGVTaskResRW.writeItem(agv, task, String.valueOf(score));
+					
 				}
 			}
 		};
