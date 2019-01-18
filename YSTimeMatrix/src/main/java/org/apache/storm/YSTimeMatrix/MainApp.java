@@ -1,9 +1,13 @@
 package org.apache.storm.YSTimeMatrix;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class MainApp {
-	public final static String REDIS_HOST = "localhost";
+	public final static String REDIS_HOST = "10.28.254.167";
 	public final static int REDIS_PORT = 6379;
 	public final static String WEBSERVER = "http://localhost:3000/news";
 	public final static long DOWNLOAD_TIME = 100;
@@ -33,13 +37,16 @@ public class MainApp {
 	
 	static ArrayList<AGVTaskResult> agvTaskResult;
 	
+	static PrintWriter pw = null;
+	static FileWriter fw = null;
+    
 	public static void initPB() {
-		qcList = new ArrayList<PositionInfo>();
+		pbList = new ArrayList<PositionInfo>();
 		PositionInfo posif = new PositionInfo(0, 0, 24150, 0, "PB");
 		for (int i = 0; i < pbNum; ++i) {
 			posif.id = 100 + i;
 			posif.x = 200 + 600 * i;
-			qcList.add(posif);
+			pbList.add(posif);
 		}
 	}
 	
@@ -68,6 +75,9 @@ public class MainApp {
 		for (int i = 0; i < agvTaskNum; ++i) {
 			agvList.add(getRandomPBorQCorWS());
 		}
+		for (int i = 0; i < agvTaskNum; ++i) {
+			agvList.get(i).id = 0;
+		}
 	}
 	
 	public static void initTask() {
@@ -78,9 +88,13 @@ public class MainApp {
 			taskEndList.add(getRandomQC());
 		}
 		
-		for (int i = 0; i < agvTaskNum / 2; ++i) {
+		for (int i = agvTaskNum / 2; i < agvTaskNum; ++i) {
 			taskEndList.add(getRandomPBorWS());
 			taskStartList.add(getRandomQC());
+		}
+		
+		for (int i = 0; i < agvTaskNum; ++i) {
+			taskStartList.get(i).id = i;
 		}
 	}
 	
@@ -101,16 +115,21 @@ public class MainApp {
 		}
 	}
 	
+	public static int getRandomInteger(int maxNum) {
+		return (int)(Math.random() * maxNum);
+	}
 	public static PositionInfo getRandomPB() {
-		return pbList.get((int)Math.random() * pbNum);
+		int pbIndex = getRandomInteger(pbNum - 1);
+		
+		return pbList.get(pbIndex);
 	}
 	
 	public static PositionInfo getRandomQC() {
-		return qcList.get((int)Math.random() * qcNum);
+		return qcList.get(getRandomInteger( qcNum - 1));
 	}
 	
 	public static PositionInfo getRandomWS() {
-		return wsList.get((int)Math.random() * wsNum);
+		return wsList.get(getRandomInteger( wsNum - 1));
 	}
 	
 	public static void storeAGVTask() {
@@ -205,12 +224,51 @@ public class MainApp {
 	}
 	
 	public static void readAGVTaskReuslt() {
+		agvTaskResult = new ArrayList<AGVTaskResult> ();
 		for (int i = 0; i < agvList.size(); ++i) {
 			ArrayList<AGVTaskResult> agvTaskRes = AGVTaskResRW.readItem(agvList.get(i).id);
-			agvTaskResult.addAll(agvTaskRes);
+			if (agvTaskRes.size() > 0) {
+				agvTaskResult.addAll(agvTaskRes);
+			}
+			
 		}
 	}
 	
+	public static void dumpResultToFile() {
+        String filename = "agvTaskResult.txt";
+        // 关联文件
+        File file = new File(filename);
+        if(!file.exists()){
+            // 判断文件不存在就new新文件,写数据
+            try {
+                file.createNewFile();
+                // java IO流和文件关联
+                pw = new PrintWriter(file);
+                for (int i = 0; i < agvTaskResult.size(); ++i) {
+                	pw.print(agvTaskResult.get(i).toString());
+                	pw.println();
+                }
+
+                pw.flush();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+             
+        }else{
+            // 判断文件存在,就以FileWriter文件追加的方式写文件
+            try {
+                fw = new FileWriter(filename,true);
+                for (int i = 0; i < agvTaskResult.size(); ++i) {
+                	fw.write(agvTaskResult.get(i).toString() + "\n");
+                }
+                fw.flush();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+	}
 	public static void main(String[] args) {
 		agvTaskRW = new AGVTaskReaderWriter(REDIS_HOST, REDIS_PORT, AGV_TASK_LIST_KEY);
 		downQcpbRW = new DownQcpbReaderWriter(REDIS_HOST, REDIS_PORT);
@@ -228,7 +286,18 @@ public class MainApp {
 		storeAGVTask();
 		storePbInfo();
 		
+		System.out.println("init and store config complete!");
+		try {
+			Thread.sleep(10000, 1);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("readAGVTaskReuslt start!");
 		//读取最终结果
 		readAGVTaskReuslt();
+		System.out.println("dumpResultToFile start!");
+		dumpResultToFile();
+		System.out.println("dumpResultToFile end!");
 	}		
 }

@@ -5,11 +5,14 @@ import org.apache.log4j.Logger;
 
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
+import org.apache.storm.StormSubmitter;
+import org.apache.storm.generated.AlreadyAliveException;
+import org.apache.storm.generated.AuthorizationException;
+import org.apache.storm.generated.InvalidTopologyException;
 import org.apache.storm.topology.TopologyBuilder;
-import org.apache.storm.tuple.Fields;
 
 public class TopologyStarter2 {
-	public final static String REDIS_HOST = "localhost";
+	public final static String REDIS_HOST = "10.28.254.167";
 	public final static int REDIS_PORT = 6379;
 	public final static String WEBSERVER = "http://localhost:3000/news";
 	public final static long DOWNLOAD_TIME = 100;
@@ -21,18 +24,24 @@ public class TopologyStarter2 {
 
 		TopologyBuilder builder = new TopologyBuilder();
         
-        builder.setSpout("agv-task", new AGVTaskSpout(), 3);
+        //builder.setSpout("agv-task", new AGVTaskSpout(), 3);
+		builder.setSpout("agv-task", new AGVTaskSpout());
         
-        builder.setBolt("get-pbs", new GetLargeProbablityPBBolt(), 3)
+        //builder.setBolt("get-pbs", new GetLargeProbablityPBBolt(), 3)
+		builder.setBolt("get-pbs", new GetLargeProbablityPBBolt())
         				.shuffleGrouping("agv-task");
         
-        builder.setBolt("agv-task-time", new AGVTaskTimeBolt(), 5)
+        //builder.setBolt("agv-task-time", new AGVTaskTimeBolt(), 5)
+		builder.setBolt("agv-task-time", new AGVTaskTimeBolt())
         				.shuffleGrouping("get-pbs");
         				//.fieldsGrouping("get-pbs", new Fields("user"));
 
-        if(!testing)
-        	builder.setBolt("news-notifier", new NewsNotifierBolt(), 5)
-        				.shuffleGrouping("agv-task-time");
+
+    	//builder.setBolt("news-notifier", new NewsNotifierBolt(), 5)
+		builder.setBolt("news-notifier", new NewsNotifierBolt())
+			.shuffleGrouping("agv-task-time");
+
+
         
         Config conf = new Config();
         conf.setDebug(true);
@@ -43,8 +52,28 @@ public class TopologyStarter2 {
         conf.put("download-time", DOWNLOAD_TIME);
         conf.put("agv-task-list-key", AGV_TASK_LIST_KEY);
         
-        LocalCluster cluster = new LocalCluster();
-        cluster.submitTopology("YSTimeMatrixCalc", conf, builder.createTopology());
+        if(args != null && args.length > 0) {
+        	System.out.println("storm remote cluster mode!");
+            conf.setNumWorkers(10);
+            try {
+				StormSubmitter.submitTopology(args[0], conf, builder.createTopology());
+			} catch (AuthorizationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			
+            } catch (AlreadyAliveException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (InvalidTopologyException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        } else {
+        	System.out.println("storm local cluster mode!");
+            LocalCluster cluster = new LocalCluster();
+            cluster.submitTopology("YSTimeMatrixCalc", conf, builder.createTopology());
+        }
+
 	}
 }
 
