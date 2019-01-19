@@ -28,7 +28,7 @@ public class PbInfo {
 	}
 	
 	public String toString() {
-		return String.valueOf(x) + "," + String.valueOf(y) + "," + String.valueOf(rate);
+		return String.valueOf(x) + "," + String.valueOf(y) + "," + String.valueOf(rate); // String.format("%.6f", rate);
 	}
 	
 }

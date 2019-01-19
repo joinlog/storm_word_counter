@@ -49,11 +49,11 @@ public class GetLargeProbablityPBBolt extends BaseRichBolt {
 		ArrayList<PbInfo> pbList = new ArrayList<PbInfo>();
 		if (false == "QC".equals( agvTaskList.get(1).type) && true == "QC".equals( agvTaskList.get(2).type)) { //起点非QC，终点是QC
 			//获取上档pb
-			pbList = upPbRW.ReadQcpb(agvTaskList.get(2).id);
+			pbList = upPbRW.ReadQcpbSet(agvTaskList.get(2).id);
 		}
 		else if (false == "QC".equals( agvTaskList.get(2).type) && true == "QC".equals( agvTaskList.get(1).type)) { //起点是QC，终点是非QC
 			// 获取下档pb
-			pbList = downPbRW.ReadQcpb(agvTaskList.get(1).id);
+			pbList = downPbRW.ReadQcpbSet(agvTaskList.get(1).id);
 		}
 		else {
 			
