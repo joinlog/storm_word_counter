@@ -45,7 +45,7 @@ public class MainApp {
 		
 		for (int i = 0; i < pbNum; ++i) {
 			PositionInfo posif = new PositionInfo(0, 0, 24150, 0, "PB");
-			posif.id = 100 + i;
+			posif.id = 1001 + i;
 			posif.x = 200 + 600 * i;
 			pbList.add(posif);
 		}
@@ -56,7 +56,7 @@ public class MainApp {
 
 		for (int i = 0; i < qcNum; ++i) {
 			PositionInfo posif = new PositionInfo(0, 0, 20600, 0, "QC");
-			posif.id = 100 + i;
+			posif.id = 101 + i;
 			posif.x = 7000 + 8000 * i;
 			qcList.add(posif);
 		}
@@ -67,7 +67,7 @@ public class MainApp {
 
 		for (int i = 0; i < wsNum; ++i) {
 			PositionInfo posif = new PositionInfo(0, 0, 30400, 90, "WS");
-			posif.id = 100 + i;
+			posif.id = 201 + i;
 			posif.x = 2000 + 4000 * i;
 			wsList.add(posif);
 		}
@@ -78,8 +78,10 @@ public class MainApp {
 		for (int i = 0; i < agvTaskNum; ++i) {
 			agvList.add(getRandomPBorQCorWS());
 		}
-		for (int i = 0; i < agvTaskNum; ++i) {
-			agvList.get(i).id = 800 + i;
+		//System.out.println("initAGV:");
+		for (int i = 0; i < agvList.size(); ++i) {
+			agvList.get(i).id = 801 + i;
+			//System.out.println(agvList.get(i).toString());
 		}
 	}
 	
@@ -96,16 +98,18 @@ public class MainApp {
 			taskStartList.add(getRandomQC());
 		}
 		
-		for (int i = 0; i < agvTaskNum; ++i) {
-			taskStartList.get(i).id = 100 + i;
+		//System.out.println("initTask:");
+		for (int i = 0; i < taskStartList.size(); ++i) {
+			taskStartList.get(i).id = 601 + i;
 			taskEndList.get(i).id  = 0;
+			//System.out.println(taskStartList.get(i).toString() + " " + taskEndList.get(i).toString());
 		}
 	}
 	
 	public static PositionInfo getRandomPBorQCorWS() {
 		 
-		if (Math.random() > 0.5) {
-			return getRandomPB();
+		if (Math.random() > 0.7) {
+			return getRandomQC();
 		} else {
 			return getRandomPBorWS();
 		}
@@ -113,7 +117,7 @@ public class MainApp {
 	
 	public static PositionInfo getRandomPBorWS() {
 		if (Math.random() > 0.5) {
-			return getRandomQC();
+			return getRandomPB();
 		} else {
 			return getRandomWS();
 		}
@@ -123,24 +127,28 @@ public class MainApp {
 		return (int)(Math.random() * maxNum);
 	}
 	public static PositionInfo getRandomPB() {
-		int pbIndex = getRandomInteger(pbNum - 1);
-		
-		return pbList.get(pbIndex);
+
+		PositionInfo mPosIf = new PositionInfo(pbList.get(getRandomInteger( pbNum - 1)).toString());
+		return mPosIf;
 	}
 	
 	public static PositionInfo getRandomQC() {
-		return qcList.get(getRandomInteger( qcNum - 1));
+		PositionInfo mPosIf = new PositionInfo(qcList.get(getRandomInteger( qcNum - 1)).toString());
+		return mPosIf;
 	}
 	
 	public static PositionInfo getRandomWS() {
-		return wsList.get(getRandomInteger( wsNum - 1));
+		PositionInfo mPosIf = new PositionInfo(wsList.get(getRandomInteger( wsNum - 1)).toString());
+		return mPosIf;
 	}
 	
 	public static void storeAGVTask() {
+		System.out.println("storeAGVTask");
 		for (int i = 0; i < agvList.size(); ++i) {
 			for (int j = 0; j < taskStartList.size(); ++j) {
 				try {
 					agvTaskRW.writeItem(agvList.get(i).toString(), taskStartList.get(j).toString(), taskEndList.get(j).toString());
+					System.out.println("["+ String.valueOf(i) + "," + String.valueOf(j) + "] "+ agvList.get(i).toString() +" "+ taskStartList.get(j).toString() +" "+ taskEndList.get(j).toString());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
