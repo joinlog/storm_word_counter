@@ -44,7 +44,7 @@ public class MainApp {
 		pbList = new ArrayList<PositionInfo>();
 		
 		for (int i = 0; i < pbNum; ++i) {
-			PositionInfo posif = new PositionInfo(0, 0, 24150, 0, "PB");
+			PositionInfo posif = new PositionInfo(0, 0, 0, 24150, 0, "PB");
 			posif.id = 1001 + i;
 			posif.x = 200 + 600 * i;
 			pbList.add(posif);
@@ -55,7 +55,7 @@ public class MainApp {
 		qcList = new ArrayList<PositionInfo>();
 
 		for (int i = 0; i < qcNum; ++i) {
-			PositionInfo posif = new PositionInfo(0, 0, 20600, 0, "QC");
+			PositionInfo posif = new PositionInfo(0, 0, 0, 20600, 0, "QC");
 			posif.id = 101 + i;
 			posif.x = 7000 + 8000 * i;
 			qcList.add(posif);
@@ -66,7 +66,7 @@ public class MainApp {
 		wsList = new ArrayList<PositionInfo>();
 
 		for (int i = 0; i < wsNum; ++i) {
-			PositionInfo posif = new PositionInfo(0, 0, 30400, 90, "WS");
+			PositionInfo posif = new PositionInfo(0, 0, 0, 30400, 90, "WS");
 			posif.id = 201 + i;
 			posif.x = 2000 + 4000 * i;
 			wsList.add(posif);
@@ -80,7 +80,7 @@ public class MainApp {
 		}
 		//System.out.println("initAGV:");
 		for (int i = 0; i < agvList.size(); ++i) {
-			agvList.get(i).id = 801 + i;
+			agvList.get(i).agvTaskId = 801 + i;
 			//System.out.println(agvList.get(i).toString());
 		}
 	}
@@ -100,8 +100,8 @@ public class MainApp {
 		
 		//System.out.println("initTask:");
 		for (int i = 0; i < taskStartList.size(); ++i) {
-			taskStartList.get(i).id = 601 + i;
-			taskEndList.get(i).id  = 0;
+			taskStartList.get(i).agvTaskId = 601 + i;
+			taskEndList.get(i).agvTaskId  = 601 + i;
 			//System.out.println(taskStartList.get(i).toString() + " " + taskEndList.get(i).toString());
 		}
 	}
@@ -143,12 +143,12 @@ public class MainApp {
 	}
 	
 	public static void storeAGVTask() {
-		System.out.println("storeAGVTask");
+		//System.out.println("storeAGVTask");
 		for (int i = 0; i < agvList.size(); ++i) {
 			for (int j = 0; j < taskStartList.size(); ++j) {
 				try {
 					agvTaskRW.writeItem(agvList.get(i).toString(), taskStartList.get(j).toString(), taskEndList.get(j).toString());
-					System.out.println("["+ String.valueOf(i) + "," + String.valueOf(j) + "] "+ agvList.get(i).toString() +" "+ taskStartList.get(j).toString() +" "+ taskEndList.get(j).toString());
+					//System.out.println("["+ String.valueOf(i) + "," + String.valueOf(j) + "] "+ agvList.get(i).toString() +" "+ taskStartList.get(j).toString() +" "+ taskEndList.get(j).toString());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -226,17 +226,24 @@ public class MainApp {
 		for (int i = 0; i < qcList.size(); ++i) {
 			ArrayList<PositionInfo> pbPos = getUpQcpbs(i);
 			ArrayList<PbInfo> pbIf = getNormalDistributionPB(pbPos);
-			upQcpbRW.WriteQcpb(qcList.get(i).id, pbIf);
+			upQcpbRW.WriteQcpbSet(qcList.get(i).id, pbIf);
 		}
 	}
 	public static void storeDownPbInfo() {
 		for (int i = 0; i < qcList.size(); ++i) {
 			ArrayList<PositionInfo> pbPos = getDownQcpbs(i);
 			ArrayList<PbInfo> pbIf = getNormalDistributionPB(pbPos);
-			downQcpbRW.WriteQcpb(qcList.get(i).id, pbIf);
+			downQcpbRW.WriteQcpbSet(qcList.get(i).id, pbIf);
+		}
+	}
+	public static void ClearUpDownPbInfo() {
+		for (int i = 0; i < qcList.size(); ++i) {
+			upQcpbRW.ClearQcpbSet(qcList.get(i).id);
+			downQcpbRW.ClearQcpbSet(qcList.get(i).id);
 		}
 	}
 	public static void storePbInfo() {
+		ClearUpDownPbInfo();
 		System.out.println("storeUpPbInfo");
 		storeUpPbInfo();
 		System.out.println("storeDownPbInfo");
@@ -246,7 +253,7 @@ public class MainApp {
 	public static void readAGVTaskReuslt() {
 		agvTaskResult = new ArrayList<AGVTaskResult> ();
 		for (int i = 0; i < agvList.size(); ++i) {
-			ArrayList<AGVTaskResult> agvTaskRes = AGVTaskResRW.readItem(agvList.get(i).id);
+			ArrayList<AGVTaskResult> agvTaskRes = AGVTaskResRW.readItem(agvList.get(i).agvTaskId);
 			if (agvTaskRes.size() > 0) {
 				agvTaskResult.addAll(agvTaskRes);
 			}

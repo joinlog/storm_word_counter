@@ -26,8 +26,8 @@ public class AGVTaskTimeBolt extends BaseRichBolt {
 		int task;
 		int score = 0;
 		ArrayList<PositionInfo> agvTaskList = (ArrayList<PositionInfo>)input.getValue(0);
-		agv = agvTaskList.get(0).id;
-		task = agvTaskList.get(1).id;
+		agv = agvTaskList.get(0).agvTaskId;
+		task = agvTaskList.get(1).agvTaskId;
 		
 		ArrayList<PbInfo> pbList = (ArrayList<PbInfo>)input.getValue(1);
 		if (pbList.size() > 0) {
