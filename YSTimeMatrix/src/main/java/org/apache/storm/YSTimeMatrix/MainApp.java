@@ -191,17 +191,23 @@ public class MainApp {
 		return downQcpbList;
 	}
 	
+	//正态分布函数
+	// https://zhidao.baidu.com/question/433502765.html
 	public static double getNormalDistribution(int idx, int size) {
-		double x = (idx + 1) / (size + 1);
-		return Math.pow(Math.E, (-0.5 * x * x)) / Math.sqrt(2 * Math.PI);
+		double x = idx + 1;
+		double len = size + 1;
+		double u = len / 2.0;
+		double sigma = len / 3.0;
+
+		return Math.pow(Math.E, (-0.5 *( x - u) *( x - u)/(sigma * sigma))) / (sigma * Math.sqrt(2 * Math.PI));
 	}
 	
 	
 	// normal distribution正态分布
-	public static ArrayList<PbInfo> getNormalDistributionPB(ArrayList<PositionInfo> pbList) {
+	public static ArrayList<PbInfo> getNormalDistributionPB(ArrayList<PositionInfo> pbPosList) {
 		ArrayList<PbInfo> pbInfoList = new ArrayList<PbInfo>();
-		for (int i = 0; i < pbList.size(); ++i) {
-			PbInfo pbIf = new PbInfo(pbList.get(i).x, pbList.get(i).y, getNormalDistribution(i, pbList.size()));
+		for (int i = 0; i < pbPosList.size(); ++i) {
+			PbInfo pbIf = new PbInfo(pbPosList.get(i).x, pbPosList.get(i).y, getNormalDistribution(i, pbPosList.size()));
 			pbInfoList.add(pbIf);
 		}
 		return pbInfoList;
