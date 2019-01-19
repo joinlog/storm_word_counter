@@ -42,8 +42,9 @@ public class MainApp {
     
 	public static void initPB() {
 		pbList = new ArrayList<PositionInfo>();
-		PositionInfo posif = new PositionInfo(0, 0, 24150, 0, "PB");
+		
 		for (int i = 0; i < pbNum; ++i) {
+			PositionInfo posif = new PositionInfo(0, 0, 24150, 0, "PB");
 			posif.id = 100 + i;
 			posif.x = 200 + 600 * i;
 			pbList.add(posif);
@@ -52,8 +53,9 @@ public class MainApp {
 	
 	public static void initQC() {
 		qcList = new ArrayList<PositionInfo>();
-		PositionInfo posif = new PositionInfo(0, 0, 20600, 0, "QC");
+
 		for (int i = 0; i < qcNum; ++i) {
+			PositionInfo posif = new PositionInfo(0, 0, 20600, 0, "QC");
 			posif.id = 100 + i;
 			posif.x = 7000 + 8000 * i;
 			qcList.add(posif);
@@ -62,8 +64,9 @@ public class MainApp {
 	
 	public static void initWS() {
 		wsList = new ArrayList<PositionInfo>();
-		PositionInfo posif = new PositionInfo(0, 0, 30400, 90, "WS");
+
 		for (int i = 0; i < wsNum; ++i) {
+			PositionInfo posif = new PositionInfo(0, 0, 30400, 90, "WS");
 			posif.id = 100 + i;
 			posif.x = 2000 + 4000 * i;
 			wsList.add(posif);
@@ -76,7 +79,7 @@ public class MainApp {
 			agvList.add(getRandomPBorQCorWS());
 		}
 		for (int i = 0; i < agvTaskNum; ++i) {
-			agvList.get(i).id = 0;
+			agvList.get(i).id = 800 + i;
 		}
 	}
 	
@@ -94,7 +97,8 @@ public class MainApp {
 		}
 		
 		for (int i = 0; i < agvTaskNum; ++i) {
-			taskStartList.get(i).id = i;
+			taskStartList.get(i).id = 100 + i;
+			taskEndList.get(i).id  = 0;
 		}
 	}
 	
@@ -170,7 +174,7 @@ public class MainApp {
 	public static ArrayList<PositionInfo> getDownQcpbs(int qcIndex) {
 		ArrayList<PositionInfo> downQcpbList = new ArrayList<PositionInfo>();
 		// index大的坐标也大
-		int j = qcList.size();
+		int j = qcList.size()  - 1;
 		for (int i = pbList.size() - 1; i >= 0 ; --i) {
 			// 下档pb从坐标大的一侧
 			if (pbList.get(i).x < qcList.get(qcIndex).x) {
