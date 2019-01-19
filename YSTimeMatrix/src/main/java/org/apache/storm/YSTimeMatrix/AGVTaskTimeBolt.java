@@ -32,7 +32,7 @@ public class AGVTaskTimeBolt extends BaseRichBolt {
 		ArrayList<PbInfo> pbList = (ArrayList<PbInfo>)input.getValue(1);
 		if (pbList.size() > 0) {
 			for (int i = 0; i < pbList.size(); ++i) {
-				score += getTaskScore(agvTaskList, pbList.get(i)) ;
+				score += getTaskScore(agvTaskList, pbList.get(i)) * pbList.get(i).rate ;
 			}
 			score /= pbList.size();
 		} else {

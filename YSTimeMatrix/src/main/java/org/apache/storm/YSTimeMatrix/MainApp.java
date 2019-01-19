@@ -237,7 +237,9 @@ public class MainApp {
 		}
 	}
 	public static void storePbInfo() {
+		System.out.println("storeUpPbInfo");
 		storeUpPbInfo();
+		System.out.println("storeDownPbInfo");
 		storeDownPbInfo();
 	}
 	
