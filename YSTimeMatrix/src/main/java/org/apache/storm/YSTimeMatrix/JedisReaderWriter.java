@@ -69,6 +69,7 @@ public class JedisReaderWriter{
 		
 		try {
 			writeItem(buildKey(String.valueOf(qcid)), Qcpb);
+			//System.out.println(buildKey(String.valueOf(qcid)) + ":"+Qcpb);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

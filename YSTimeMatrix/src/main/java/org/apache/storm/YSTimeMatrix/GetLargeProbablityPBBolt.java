@@ -43,6 +43,9 @@ public class GetLargeProbablityPBBolt extends BaseRichBolt {
 	public void execute(Tuple input) {
 		// TODO Auto-generated method stub
 		ArrayList<PositionInfo> agvTaskList = (ArrayList<PositionInfo>)input.getValue(0);
+		if (agvTaskList.size() != 3) {
+			return;
+		}
 		ArrayList<PbInfo> pbList = new ArrayList<PbInfo>();
 		if (false == "QC".equals( agvTaskList.get(1).type) && true == "QC".equals( agvTaskList.get(2).type)) { //起点非QC，终点是QC
 			//获取上档pb
