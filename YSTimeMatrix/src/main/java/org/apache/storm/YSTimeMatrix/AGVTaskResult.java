@@ -17,8 +17,8 @@ public class AGVTaskResult {
 	public void ParseAGVTaskResult(String agvTaskScore) {
 		String[] keys = agvTaskScore.split(":");
 		this.agv = Integer.valueOf(keys[0].toString()).intValue();
-		this.task = Integer.valueOf(keys[0].toString()).intValue();
-		this.score = Integer.valueOf(keys[0].toString()).intValue();
+		this.task = Integer.valueOf(keys[1].toString()).intValue();
+		this.score = Integer.valueOf(keys[2].toString()).intValue();
 	}
 	
 	public String toString() {

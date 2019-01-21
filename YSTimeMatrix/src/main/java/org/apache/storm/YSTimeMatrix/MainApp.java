@@ -42,9 +42,10 @@ public class MainApp {
     
 	public static void initPB() {
 		pbList = new ArrayList<PositionInfo>();
-		PositionInfo posif = new PositionInfo(0, 0, 24150, 0, "PB");
+		
 		for (int i = 0; i < pbNum; ++i) {
-			posif.id = 100 + i;
+			PositionInfo posif = new PositionInfo(0, 0, 0, 24150, 0, "PB");
+			posif.id = 1001 + i;
 			posif.x = 200 + 600 * i;
 			pbList.add(posif);
 		}
@@ -52,9 +53,10 @@ public class MainApp {
 	
 	public static void initQC() {
 		qcList = new ArrayList<PositionInfo>();
-		PositionInfo posif = new PositionInfo(0, 0, 20600, 0, "QC");
+
 		for (int i = 0; i < qcNum; ++i) {
-			posif.id = 100 + i;
+			PositionInfo posif = new PositionInfo(0, 0, 0, 20600, 0, "QC");
+			posif.id = 101 + i;
 			posif.x = 7000 + 8000 * i;
 			qcList.add(posif);
 		}
@@ -62,9 +64,10 @@ public class MainApp {
 	
 	public static void initWS() {
 		wsList = new ArrayList<PositionInfo>();
-		PositionInfo posif = new PositionInfo(0, 0, 30400, 90, "WS");
+
 		for (int i = 0; i < wsNum; ++i) {
-			posif.id = 100 + i;
+			PositionInfo posif = new PositionInfo(0, 0, 0, 30400, 90, "WS");
+			posif.id = 201 + i;
 			posif.x = 2000 + 4000 * i;
 			wsList.add(posif);
 		}
@@ -75,8 +78,10 @@ public class MainApp {
 		for (int i = 0; i < agvTaskNum; ++i) {
 			agvList.add(getRandomPBorQCorWS());
 		}
-		for (int i = 0; i < agvTaskNum; ++i) {
-			agvList.get(i).id = 0;
+		//System.out.println("initAGV:");
+		for (int i = 0; i < agvList.size(); ++i) {
+			agvList.get(i).agvTaskId = 801 + i;
+			//System.out.println(agvList.get(i).toString());
 		}
 	}
 	
@@ -93,15 +98,18 @@ public class MainApp {
 			taskStartList.add(getRandomQC());
 		}
 		
-		for (int i = 0; i < agvTaskNum; ++i) {
-			taskStartList.get(i).id = i;
+		//System.out.println("initTask:");
+		for (int i = 0; i < taskStartList.size(); ++i) {
+			taskStartList.get(i).agvTaskId = 601 + i;
+			taskEndList.get(i).agvTaskId  = 601 + i;
+			//System.out.println(taskStartList.get(i).toString() + " " + taskEndList.get(i).toString());
 		}
 	}
 	
 	public static PositionInfo getRandomPBorQCorWS() {
 		 
-		if (Math.random() > 0.5) {
-			return getRandomPB();
+		if (Math.random() > 0.7) {
+			return getRandomQC();
 		} else {
 			return getRandomPBorWS();
 		}
@@ -109,7 +117,7 @@ public class MainApp {
 	
 	public static PositionInfo getRandomPBorWS() {
 		if (Math.random() > 0.5) {
-			return getRandomQC();
+			return getRandomPB();
 		} else {
 			return getRandomWS();
 		}
@@ -119,24 +127,28 @@ public class MainApp {
 		return (int)(Math.random() * maxNum);
 	}
 	public static PositionInfo getRandomPB() {
-		int pbIndex = getRandomInteger(pbNum - 1);
-		
-		return pbList.get(pbIndex);
+
+		PositionInfo mPosIf = new PositionInfo(pbList.get(getRandomInteger( pbNum - 1)).toString());
+		return mPosIf;
 	}
 	
 	public static PositionInfo getRandomQC() {
-		return qcList.get(getRandomInteger( qcNum - 1));
+		PositionInfo mPosIf = new PositionInfo(qcList.get(getRandomInteger( qcNum - 1)).toString());
+		return mPosIf;
 	}
 	
 	public static PositionInfo getRandomWS() {
-		return wsList.get(getRandomInteger( wsNum - 1));
+		PositionInfo mPosIf = new PositionInfo(wsList.get(getRandomInteger( wsNum - 1)).toString());
+		return mPosIf;
 	}
 	
 	public static void storeAGVTask() {
+		//System.out.println("storeAGVTask");
 		for (int i = 0; i < agvList.size(); ++i) {
 			for (int j = 0; j < taskStartList.size(); ++j) {
 				try {
 					agvTaskRW.writeItem(agvList.get(i).toString(), taskStartList.get(j).toString(), taskEndList.get(j).toString());
+					//System.out.println("["+ String.valueOf(i) + "," + String.valueOf(j) + "] "+ agvList.get(i).toString() +" "+ taskStartList.get(j).toString() +" "+ taskEndList.get(j).toString());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -170,7 +182,7 @@ public class MainApp {
 	public static ArrayList<PositionInfo> getDownQcpbs(int qcIndex) {
 		ArrayList<PositionInfo> downQcpbList = new ArrayList<PositionInfo>();
 		// index大的坐标也大
-		int j = qcList.size();
+		int j = qcList.size()  - 1;
 		for (int i = pbList.size() - 1; i >= 0 ; --i) {
 			// 下档pb从坐标大的一侧
 			if (pbList.get(i).x < qcList.get(qcIndex).x) {
@@ -187,17 +199,23 @@ public class MainApp {
 		return downQcpbList;
 	}
 	
+	//正态分布函数
+	// https://zhidao.baidu.com/question/433502765.html
 	public static double getNormalDistribution(int idx, int size) {
-		double x = (idx + 1) / (size + 1);
-		return Math.pow(Math.E, (-0.5 * x * x)) / Math.sqrt(2 * Math.PI);
+		double x = idx + 1;
+		double len = size + 1;
+		double u = len / 2.0;
+		double sigma = len / 3.0;
+
+		return Math.pow(Math.E, (-0.5 *( x - u) *( x - u)/(sigma * sigma))) / (sigma * Math.sqrt(2 * Math.PI));
 	}
 	
 	
 	// normal distribution正态分布
-	public static ArrayList<PbInfo> getNormalDistributionPB(ArrayList<PositionInfo> pbList) {
+	public static ArrayList<PbInfo> getNormalDistributionPB(ArrayList<PositionInfo> pbPosList) {
 		ArrayList<PbInfo> pbInfoList = new ArrayList<PbInfo>();
-		for (int i = 0; i < pbList.size(); ++i) {
-			PbInfo pbIf = new PbInfo(pbList.get(i).x, pbList.get(i).y, getNormalDistribution(i, pbList.size()));
+		for (int i = 0; i < pbPosList.size(); ++i) {
+			PbInfo pbIf = new PbInfo(pbPosList.get(i).x, pbPosList.get(i).y, getNormalDistribution(i, pbPosList.size()));
 			pbInfoList.add(pbIf);
 		}
 		return pbInfoList;
@@ -208,25 +226,34 @@ public class MainApp {
 		for (int i = 0; i < qcList.size(); ++i) {
 			ArrayList<PositionInfo> pbPos = getUpQcpbs(i);
 			ArrayList<PbInfo> pbIf = getNormalDistributionPB(pbPos);
-			upQcpbRW.WriteQcpb(qcList.get(i).id, pbIf);
+			upQcpbRW.WriteQcpbSet(qcList.get(i).id, pbIf);
 		}
 	}
 	public static void storeDownPbInfo() {
 		for (int i = 0; i < qcList.size(); ++i) {
 			ArrayList<PositionInfo> pbPos = getDownQcpbs(i);
 			ArrayList<PbInfo> pbIf = getNormalDistributionPB(pbPos);
-			downQcpbRW.WriteQcpb(qcList.get(i).id, pbIf);
+			downQcpbRW.WriteQcpbSet(qcList.get(i).id, pbIf);
+		}
+	}
+	public static void ClearUpDownPbInfo() {
+		for (int i = 0; i < qcList.size(); ++i) {
+			upQcpbRW.ClearQcpbSet(qcList.get(i).id);
+			downQcpbRW.ClearQcpbSet(qcList.get(i).id);
 		}
 	}
 	public static void storePbInfo() {
+		ClearUpDownPbInfo();
+		System.out.println("storeUpPbInfo");
 		storeUpPbInfo();
+		System.out.println("storeDownPbInfo");
 		storeDownPbInfo();
 	}
 	
 	public static void readAGVTaskReuslt() {
 		agvTaskResult = new ArrayList<AGVTaskResult> ();
 		for (int i = 0; i < agvList.size(); ++i) {
-			ArrayList<AGVTaskResult> agvTaskRes = AGVTaskResRW.readItem(agvList.get(i).id);
+			ArrayList<AGVTaskResult> agvTaskRes = AGVTaskResRW.readItem(agvList.get(i).agvTaskId);
 			if (agvTaskRes.size() > 0) {
 				agvTaskResult.addAll(agvTaskRes);
 			}

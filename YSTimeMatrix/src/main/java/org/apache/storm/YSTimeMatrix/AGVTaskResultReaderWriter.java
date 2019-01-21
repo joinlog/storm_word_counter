@@ -22,7 +22,7 @@ public class AGVTaskResultReaderWriter {
     }
 	
 	private String buildRedisKey(String agv) {
-		return "agv:"+agv;
+		return "agvTaskResult:"+agv;
 	}
 	
 	// 返回value 以“：”间隔pbid组成字符串
